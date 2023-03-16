@@ -2,3 +2,5 @@ requests
 streamlit
 click==8
 boto3
+streamlit_ext
+
