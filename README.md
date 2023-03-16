@@ -3,4 +3,4 @@
 
 To transcribe...
 
-try it out https://sathish333-text-over-speech-streamlit-app-xuxhjq.streamlit.app/
+try it out https://sathish333-text-over-speech-streamlit-aws-w8gzaz.streamlit.app/
