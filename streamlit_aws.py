@@ -10,8 +10,11 @@ import boto3
 import random
 import string
 
+import streamlit_ext as ste
+
 os.environ['AWS_ACCESS_KEY_ID'] = st.secrets['AWS_id']
 os.environ['AWS_SECRET_ACCESS_KEY'] = st.secrets['AWS_key']
+
 
 s3 = boto3.client('s3')
 transcribe = boto3.client('transcribe',region_name='us-east-1')
@@ -31,7 +34,7 @@ st.image(
 st.title("Speech to text transcription app")
 st.write(
     """  
--   Upload a wav file, transcribe it, then export it to a text file!
+-   Upload a mp3 file, transcribe it, then export it to a text file!
 -   Use cases: call centres, team meetings, training videos, school calls etc.
 	    """
 )
@@ -40,12 +43,12 @@ st.text("")
 c1, c2, c3 = st.columns([1, 4, 1])
 with c2:
     with st.form(key="my_form"):
-        f = st.file_uploader("", type=[".wav"])
-        st.info("upload a .wav file")
+        f = st.file_uploader("", type=[".mp3"])
+        st.info("upload a .mp3 file")
         submit_button = st.form_submit_button(label="Transcribe")
 
 if f is not None:
-    st.audio(f, format="wav")
+    st.audio(f, format="mp3")
     path_in = f.name
     f.seek(0, os.SEEK_END)
     getsize = f.tell() 
@@ -55,7 +58,7 @@ if f is not None:
         if getsize < 20:
             # To read file as bytes:
             bytes_data = f.getvalue()
-            filename='audio_file.wav'
+            filename='audio_file.mp3'
             with open(filename, 'wb') as f: 
                 f.write(bytes_data) # stroing locally 
 
@@ -65,8 +68,8 @@ if f is not None:
 
             response = transcribe.start_transcription_job(
                 TranscriptionJobName=job_name,
-                Media={'MediaFileUri': 's3://temp-bucket-1729/audio.wav'},
-                MediaFormat='wav',
+                Media={'MediaFileUri': 's3://temp-bucket-1729/audio_file.mp3'},
+                MediaFormat='mp3',
                 LanguageCode='en-US',
                 OutputBucketName=bucket_name,
             ) # triggering transcription job
@@ -86,16 +89,10 @@ if f is not None:
                 st.success('Processing completed!', icon="✅")
                 st.info(text)
 
-                st.download_button(
+                ste.download_button(
                     "Download the transcription",
                     text,
-                    file_name=None,
-                    mime=None,
-                    key=None,
-                    help=None,
-                    on_click=None,
-                    args=None,
-                    kwargs=None,
+                    file_name='transcription.txt',
                 ) 
 
         else:
